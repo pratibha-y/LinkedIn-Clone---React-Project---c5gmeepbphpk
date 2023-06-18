@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react'
+import React, { forwardRef , useState } from 'react'
 import  Avatar  from '@mui/material/Avatar'
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import "./css/post.css"
@@ -10,6 +10,23 @@ import SendIcon from '@mui/icons-material/Send';
 
 
 const Host = forwardRef(({name, description, message, photoURL}, ref)=> {
+  const [liked, setLiked] = useState(false);
+  //const [numLikes, setNumLikes] = useState(0)
+  const [comments, setComments] = useState([])
+
+  const handleLike = () => {
+    //setNumLikes(numLikes + 1)
+    setLiked(!liked)
+  }
+
+  const handleCommentSubmit = (event) => {
+    event.preventDefault()
+    const formData = new FormData(event.target)
+    const comment = formData.get('comment')
+    setComments([...comments, comment])
+    event.target.reset()
+  }
+
   return (
     <div className='posts' ref={ref}> 
     <div className='post_header'>
@@ -29,14 +46,14 @@ const Host = forwardRef(({name, description, message, photoURL}, ref)=> {
         <p> {message}</p>
       </div>
       <div className='post_footer'>
-        <div className='post_footer_option'>
-        <ThumbUpAltIcon/>
+        <div className='post_footer_option' onClick={handleLike}>
+        <ThumbUpAltIcon style = {{ color: liked ? 'blue' : 'gray' }}/>
         <span>Like</span>
 
             </div>
             <div className='post_footer_option'>
         <CommentIcon/>
-        <span>comment</span>
+        <span>({comments.length}) comment</span>
 
             </div>
             <div className='post_footer_option'>
@@ -50,6 +67,15 @@ const Host = forwardRef(({name, description, message, photoURL}, ref)=> {
 
             </div>
             
+      </div>
+      <div className='post_comments'>
+        {comments.map((comment, index) => (
+          <p key={index}>{comment}</p>
+        ))}
+        <form onSubmit={handleCommentSubmit}>
+          <input type='text' name='comment' id="comment-input"  placeholder='Add a comment'/>
+          <button type='submit'id="comment-btn" >Post</button>
+        </form>
       </div>
       
     </div>
